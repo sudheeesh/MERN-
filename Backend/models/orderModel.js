@@ -52,6 +52,11 @@ const orderSchema = new mongoose.Schema({
             required:true
            }
     }],
+    orderStatus:{
+        type:String,
+        required:true,
+        default:"processing"
+    },
     user:{
         type:mongoose.Schema.ObjectId,
         ref:"User",
@@ -91,7 +96,7 @@ const orderSchema = new mongoose.Schema({
         required:true,
         default:0
     },
-    deleiveredAt:Date,
+    deliveredAt:Date,
     createdAt:{
           type:Date,
           default:Date.now
