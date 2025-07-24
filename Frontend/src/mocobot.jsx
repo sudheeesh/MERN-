@@ -1,0 +1,1 @@
+export const CDN_URL = "https://t4.ftcdn.net/jpg/02/98/81/45/240_F_298814545_2mCCI2zdVN4WTHZVIYx0aIHNSGMxVxFO.jpg"
