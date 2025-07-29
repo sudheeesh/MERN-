@@ -1,8 +1,11 @@
 import app from './app.js';
 import dotenv from "dotenv";
 import { connectMongoDatabase } from './config/db.js';
+
+
 dotenv.config({path: "Backend/config/config.env"})
 connectMongoDatabase()
+
 const Port = process.env.PORT || 3000;
 
 process.on('uncaughtException',(err) => {

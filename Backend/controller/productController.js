@@ -20,6 +20,26 @@ export const getAllProducts = handleAsyncError(async(req,res,next) => {
 //Create New product
 export const createProducts = handleAsyncError(async(req,res,next) => {
    req.body.user= req.user.id
+
+   const imageLinks = []
+    
+   if(req.files && req.files.images){
+      imageLinks = req.files.images.map((file) => ({
+        public_id:file.filename,
+        url:file.path
+      }))
+   }
+
+   if(req.files && req.files.image){
+      const file = req.files.image[0]
+      imageLinks.push({
+         public_id:file.filename,
+         url:file.path
+      })
+   }
+
+   req.body.images = imageLinks
+   
    const product = await Product.create(req.body)
    res.status(201).json({
       success:true,
@@ -135,7 +155,7 @@ export const createUpdateReview = handleAsyncError(async(req,res,next)=>{
       const reviewExists = product.reviews.find(review => review.user.toString()=== req.user.id.toString()) //when the id is number we can add .toString()
       if(reviewExists){
           product.reviews.forEach(review => {
-          if( review.user.toString()=== req.user.id){
+          if( review.user.toString()=== req.user.id.toString()){
             review.rating = rating;
             review.comment = comment;
           }
