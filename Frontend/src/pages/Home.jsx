@@ -12,7 +12,6 @@ const Home = () =>{
     <div> 
         <h2 className='font-serif text-2xl font-medium focus-within:text-gray-500 text-center p-5'>Trending Now</h2>
        <Products/>
-        <Footer/>
     </div>
     </>
   )

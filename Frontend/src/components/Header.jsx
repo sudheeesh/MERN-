@@ -18,7 +18,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-1">
         {/* Logo */}
         <div className="flex items-center">
-          <img className="h-20 w-auto object-contain" src={CDN_URL} alt="logo" />
+          <img className="h-16 w-auto object-contain" src={CDN_URL} alt="logo" />
         </div>
 
         {/* Search bar */}

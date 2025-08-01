@@ -1,91 +1,155 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import axiosInstance from '../utils/axiosInstance'
-import { useDispatch, useSelector } from 'react-redux'
-import { addItem, removeItem } from '../utils/cartSlice'
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axiosInstance from '../utils/axiosInstance';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem, removeItem } from '../utils/cartSlice';
+import VariantSelector from './VariantSelector.jsx';
 
 const Itemlist = () => {
-  const { id } = useParams()
-  const [product, setProduct] = useState(null)
-  const dispatch = useDispatch()
-  const cartItems = useSelector((state) => state.cart.items)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const cartItem = cartItems.find((item) => item._id === product?._id)
-  const quantity = cartItem ? cartItem.quantity : 0
+  const [product, setProduct] = useState(null);
+  const [selectedVariants, setSelectedVariants] = useState({});
 
+    const handleVariantChange = (variantName, option) => {
+  setSelectedVariants((prev) => {
+    const currentSelection = prev[variantName];
+
+    // If clicking the same option again, remove it (deselect)
+    if (currentSelection === option) {
+      const updated = { ...prev };
+      delete updated[variantName];
+      return updated;
+    }
+
+    // Otherwise, update with the new selection
+    return {
+      ...prev,
+      [variantName]: option,
+    };
+  });
+};
+
+
+
+ 
+  const cartItems = useSelector((state) => state.cart.items);
+  const cartItem = cartItems.find((item) => item._id === product?._id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+
+
+  // Fetch product on mount
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axiosInstance.get(`/product/${id}`)
-        setProduct(res.data.product)
+        const res = await axiosInstance.get(`/product/${id}`);
+        setProduct(res.data.product);
+        console.log(res.data.product);
+        
       } catch (error) {
-        console.log('failed to fetch product:', error)
+        console.error('Failed to fetch product:', error);
       }
-    }
-    fetchProduct()
-  }, [id])
+    };
 
+    fetchProduct();
+  }, [id]);
+
+  // Handlers
   const handleAddCart = () => {
-    dispatch(addItem({
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.image?.[0]?.url
-    }))
-  }
+    if (!product) return;
+    dispatch(
+      addItem({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0]?.url,
+      })
+    );
+  };
 
   const handleRemoveCart = () => {
-    dispatch(removeItem({ _id: product._id }))
+    if (!product) return;
+    dispatch(removeItem({ _id: product._id }));
+  };
+
+  const handleProceedPayment = () => {
+    dispatch(addItem({...product, quantity:1}))
+    navigate('/shipping');
+  };
+
+  // Show loader if product not fetched
+  if (!product) {
+    return <p className="p-8 text-lg">Loading...</p>;
   }
 
-  if (!product) return <p className="p-8 text-lg">Loading...</p>
-
   return (
-    <div className="pt-24 pb-16 max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {/* LEFT: Product Image */}
-      <div className='w-full'>
-        <img
-          src={product?.image?.[0]?.url}
-          alt={product?.name}
-          className="mt-4 w-full h-[400px] object-cover rounded shadow"
-        />
-      </div>
+    <div className="min-h-screen bg-[#fafafa] p-4 pt-24 pb-16 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10">
+      {/* Product Image */}
+      <div className="flex flex-col items-center">
+  <img
+    src={product?.images?.[0]?.url}
+    alt={product?.name}
+    className="rounded-xl w-72 h-96 object-cover hover"
+  />
 
-      {/* RIGHT: Product Details */}
-      <div className='flex flex-col justify-center gap-4 w-full p-2'>
-        <h1 className="text-3xl font-bold break-words">{product?.name}</h1>
-        <p className="text-green-600 text-lg">Latest trendy design</p>
-        <p className="text-xl font-semibold">₹{product?.price}</p>
-        <p className="text-gray-700">{product?.description}</p>
-        <p className="text-gray-600">{product?.about}</p>
+  {/* Move VariantSelector BELOW image */}
+  <div className="mt-4  max-w-md">
+    <VariantSelector
+      variants={product.variants}
+      selectedVariants={selectedVariants}
+      handleVariantChange={handleVariantChange}
+    />
+  </div>
+</div>
 
-        {quantity === 0 ? (
-          <button
-            onClick={handleAddCart}
-            className="mt-6 bg-pink-600 text-white px-3 py-3 rounded-lg"
-          >
-            Add to Cart
-          </button>
-        ) : (
-          <div className="mt-6 flex items-center gap-4">
+      {/* Product Info */}
+      <div className="flex flex-col gap-4 w-full p-2">
+        <h1 className="text-3xl font-bold">{product.name}</h1>
+        <p className="text-red-300 font-light ">{product.description}</p>
+        <p className="text-xl font-semibold">₹{product.price}</p>
+        <p className="text-base font-normal">In stock:{product.stock}</p>
+        <p className="text-gray-600">{product.about}</p>
+
+        {/* Cart Controls */}
+        <div className="flex flex-wrap items-center gap-4 min-h-[56px]">
+          {quantity === 0 ? (
             <button
-              className="bg-red-500 text-white px-3 py-1 rounded"
-              onClick={handleRemoveCart}
-            >
-              -
-            </button>
-            <span className="text-lg font-semibold">{quantity}</span>
-            <button
-              className="bg-green-500 text-white px-3 py-1 rounded"
               onClick={handleAddCart}
+              className="w-72 bg-pink-600 text-white px-4 py-3 rounded-lg transition hover:bg-pink-700"
             >
-              +
+              Add to Cart
             </button>
-          </div>
-        )}
+          ) : (
+            <>
+              <button
+                onClick={handleRemoveCart}
+                className="bg-red-500 text-white px-3 py-2 rounded-full hover:bg-white hover:text-black"
+              >
+                -
+              </button>
+              <span className="text-lg font-semibold">{quantity}</span>
+              <button
+                onClick={handleAddCart}
+                className="bg-green-500 text-white px-3 py-2 rounded-full  hover:bg-white hover:text-black"
+              >
+                +
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Buy Now */}
+        <button
+          onClick={handleProceedPayment}
+          className="w-72 bg-green-600 text-white px-4 py-3 rounded-lg transition hover:bg-green-700"
+        >
+          Buy Now
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Itemlist
+export default Itemlist;

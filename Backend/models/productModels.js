@@ -45,6 +45,12 @@ const productSchema = new mongoose.Schema({
     maxLength: [5, "Stock cannot exceed 5 digits"],
     default: 1,
   },
+   variants: [
+    {
+      name: { type: String, required: true },    // e.g. Size, RAM, Storage
+      options: [{ type: String, required: true }] // e.g. ["S", "M", "L"]
+    }
+  ],
   numOfReviews: {
     type: Number,
     default: 0,

@@ -21,7 +21,7 @@ export const getAllProducts = handleAsyncError(async(req,res,next) => {
 export const createProducts = handleAsyncError(async(req,res,next) => {
    req.body.user= req.user.id
 
-   const imageLinks = []
+   let imageLinks = []
     
    if(req.files && req.files.images){
       imageLinks = req.files.images.map((file) => ({
@@ -29,7 +29,6 @@ export const createProducts = handleAsyncError(async(req,res,next) => {
         url:file.path
       }))
    }
-
    if(req.files && req.files.image){
       const file = req.files.image[0]
       imageLinks.push({
@@ -37,7 +36,6 @@ export const createProducts = handleAsyncError(async(req,res,next) => {
          url:file.path
       })
    }
-
    req.body.images = imageLinks
    
    const product = await Product.create(req.body)
@@ -49,20 +47,48 @@ export const createProducts = handleAsyncError(async(req,res,next) => {
 
 //Update Product
 
-export const updateProduct = handleAsyncError(async(req,res,next) => {
-     const product = await Product.findByIdAndUpdate(req.params.id,req.body,{
-      new:true,
-      runValidators:true
-     })
-     if(!product){
-      return next(new HandleError("Product Not Found", 404))
-      }
-     res.status(200).json({
-      success:true,
-      product
-     })
-   })
+export const updateProduct = handleAsyncError(async (req, res, next) => {
+  let product = await Product.findById(req.params.id);
 
+  if (!product) {
+    return next(new HandleError("Product Not Found", 404));
+  }
+
+  // Store existing image links
+  let imageLinks = product.images || [];
+
+  // Upload new multiple images
+  if (req.files?.images) {
+    const multipleImages = req.files.images.map(file => ({
+      public_id: file.filename,
+      url: file.path,
+    }));
+    imageLinks = [...imageLinks, ...multipleImages];
+  }
+
+  // Upload new single image
+  if (req.files?.image) {
+    const singleImage = {
+      public_id: req.files.image[0].filename,
+      url: req.files.image[0].path,
+    };
+    imageLinks.push(singleImage);
+  }
+
+  // Update image field in req.body
+  req.body.images = imageLinks;
+
+  // Proceed to update product
+  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+});
 
 
 export const deleteProduct = handleAsyncError(async(req,res,next) => {

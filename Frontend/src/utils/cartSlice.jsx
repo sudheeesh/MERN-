@@ -18,25 +18,26 @@ const cartSlice = createSlice({
          }
          
         },
-        removeItem:(state,action) => {
-            const item = action.payload
-            const existingItem = state.items.find(
-               (i) => i._id === item._id 
-            )
-            if(existingItem){
-              if(existingItem.quantity === 1){
-                state.items= state.items.filter((i) => i._id !== item._id)
-              }else{
-                existingItem.quantity -= 1
-              }
-            }
-        },
+      removeItem: (state, action) => {
+         const { _id, forceDelete } = action.payload;
+         const existingItem = state.items.find(item => item._id === _id);
 
-        clearCart:(state) => {
+         if (existingItem) {
+         if (forceDelete || existingItem.quantity === 1) {
+         // Remove item fully
+         state.items = state.items.filter(item => item._id !== _id);
+         } else {
+         // Just decrease quantity
+         existingItem.quantity -= 1;
+         }
+       }
+     },
+
+         clearCart:(state) => {
             state.items = []
         }
-    }
-})
+     }
+  })
 
 export const {addItem,removeItem,clearCart} = cartSlice.actions
 

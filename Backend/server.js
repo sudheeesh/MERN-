@@ -1,12 +1,19 @@
-import app from './app.js';
 import dotenv from "dotenv";
+dotenv.config({path: 'Backend/config/config.env'})
+import app from './app.js';
 import { connectMongoDatabase } from './config/db.js';
-
-
-dotenv.config({path: "Backend/config/config.env"})
 connectMongoDatabase()
+import Razorpay from "razorpay";
 
 const Port = process.env.PORT || 3000;
+
+export const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_API_KEY,
+  key_secret:process.env.RAZORPAY_SECRET_API,
+  headers: {
+    "X-Razorpay-Account": "<merchant_account_id>"
+  }
+});
 
 process.on('uncaughtException',(err) => {
     console.log(`Error:${err.message}`);
