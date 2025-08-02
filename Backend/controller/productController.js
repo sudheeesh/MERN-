@@ -11,6 +11,7 @@ export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
   try {
     const products = await Product.find();
+     console.log('Fetched products:', products)
     res.status(200).json({ success: true, products });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
