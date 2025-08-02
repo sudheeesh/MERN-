@@ -6,16 +6,16 @@ import User from "../models/userModel.js"
 
 
 //Get ALL Product
-export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
 
-   const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
-     const products = await apiFunctionality.query
-     res.status(200).json({
-        success:true,
-        products
-     })
+export const getAllProducts = handleAsyncError(async (req, res, next) => {
+  const products = await Product.find(); // fetch all without filters
+  res.status(200).json({
+    success: true,
+    products
+  });
 });
+
 
 //Create New product
 export const createProducts = handleAsyncError(async(req,res,next) => {
