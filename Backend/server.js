@@ -4,8 +4,15 @@ import app from './app.js';
 import { connectMongoDatabase } from './config/db.js';
 connectMongoDatabase()
 import Razorpay from "razorpay";
+import cors from 'cors';
 
 const Port = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: ['https://mern-sandy-alpha.vercel.app/'], // 👈 replace with your actual Vercel domain
+  credentials: true,
+}));
+
 
 export const instance = new Razorpay({
   key_id: process.env.RAZORPAY_API_KEY,
