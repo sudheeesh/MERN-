@@ -13,6 +13,9 @@ export const getAllProducts = handleAsyncError(async(req,res,next) => {
       const products = await Product.find({});
 
        console.log("Products fetched:", products)
+       console.log("Mongoose DB Name:", mongoose.connection.name);
+console.log("Product count:", await Product.countDocuments());
+
      res.status(200).json({
         success:true,
         products
