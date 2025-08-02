@@ -3,6 +3,7 @@ import Product from "../models/productModels.js";
 import HandleError from "../utils/handleError.js";
 import APIFunctionality from "../utils/apiFunctionality.js"
 import User from "../models/userModel.js"
+import mongoose from "mongoose";
 
 
 //Get ALL Product
