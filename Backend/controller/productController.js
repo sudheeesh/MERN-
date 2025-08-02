@@ -3,21 +3,21 @@ import Product from "../models/productModels.js";
 import HandleError from "../utils/handleError.js";
 import APIFunctionality from "../utils/apiFunctionality.js"
 import User from "../models/userModel.js"
-import mongoose from "mongoose";
 
 
 //Get ALL Product
 export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
-  try {
-    const products = await Product.find();
-     console.log('Fetched products:', products)
-    res.status(200).json({ success: true, products });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
+   const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
+     const products = await apiFunctionality.query
+     console.log("Query:", apiFunctionality.query.getQuery());
+       console.log("Products fetched:", products)
+     res.status(200).json({
+        success:true,
+        products
+     })
+});
 
 //Create New product
 export const createProducts = handleAsyncError(async(req,res,next) => {
