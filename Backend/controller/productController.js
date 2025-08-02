@@ -9,19 +9,14 @@ import mongoose from "mongoose";
 //Get ALL Product
 export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
-
-   // const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
-      const products = await Product.find({});
-
-       console.log("Products fetched:", products)
-       console.log("Mongoose DB Name:", mongoose.connection.name);
-console.log("Product count:", await Product.countDocuments());
-
-     res.status(200).json({
-        success:true,
-        products
-     })
+  try {
+    const products = await Product.find();
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
+
 
 //Create New product
 export const createProducts = handleAsyncError(async(req,res,next) => {
