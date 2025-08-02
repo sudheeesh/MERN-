@@ -9,7 +9,7 @@ import User from "../models/userModel.js"
 export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
 
-   const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
+   // const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
       const products = await Product.find({});
 
        console.log("Products fetched:", products)
