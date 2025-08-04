@@ -9,7 +9,7 @@ import cors from 'cors';
 const Port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['https://mern-sandy-alpha.vercel.app/'], // 👈 replace with your actual Vercel domain
+  origin: ['https://mern-sandy-alpha.vercel.app'], // 👈 replace with your actual Vercel domain
   credentials: true,
 }));
 
