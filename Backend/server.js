@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config({path: './config/config.env'})
-import cors from 'cors';
 import app from './app.js';
 import { connectMongoDatabase } from './config/db.js';
 connectMongoDatabase()
@@ -8,14 +7,6 @@ import Razorpay from "razorpay";
 
 
 const Port = process.env.PORT || 3000;
-
-app.use(cors({
-  origin: ['http://localhost:5173',
-    'https://mern-sandy-alpha.vercel.app'],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
- allowedHeaders: ["Content-Type", "Authorization"],
-}));
 
 
 export const instance = new Razorpay({

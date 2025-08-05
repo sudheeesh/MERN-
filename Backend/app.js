@@ -6,7 +6,16 @@ import cookieParser from 'cookie-parser';
 import payment from './routes/paymentRoutes.js'
 import order from './routes/orderRoutes.js'
 import dotenv from 'dotenv'
+import cors from 'cors'
 const app = express()
+
+
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://mern-sandy-alpha.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 //middleware
 app.use(express.json())
