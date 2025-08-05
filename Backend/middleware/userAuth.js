@@ -2,10 +2,13 @@ import HandleError from "../utils/handleError.js";
 import handleAsyncError from "./handleAsyncError.js";
 import jwt from "jsonwebtoken"
 import User from "../models/userModel.js"
+import { loginUser } from "../controller/userController.js";
 
 export const verifyUserAuth = handleAsyncError(async (req, res, next) => {
  
-    const {token} = req.cookies
+    const token = req.cookies
+    console.log(token);
+    
 
   // If token is still not found
   if (!token) {
