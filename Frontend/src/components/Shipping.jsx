@@ -85,6 +85,7 @@ const ShippingPage = () => {
     },
       withCredentials: true,
     });
+    console.log(userInfo?.token)
       console.log("Order Save Response 👉", data);
     if (data.success) {
       dispatch(clearCart());
