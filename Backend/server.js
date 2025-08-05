@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config({path: './config/config.env'})
+import cors from 'cors';
 import app from './app.js';
 import { connectMongoDatabase } from './config/db.js';
 connectMongoDatabase()
 import Razorpay from "razorpay";
-import cors from 'cors';
+
 
 const Port = process.env.PORT || 3000;
 
