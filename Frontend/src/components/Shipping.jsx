@@ -78,7 +78,7 @@ const ShippingPage = () => {
       shippingPrice: deliveryCharge,
       totalPrice: totalAmount,
     };
-
+    console.log("Order Data:", orderData);
     const { data } = await axiosInstance.post("/new/order", orderData, {
        headers: {
     Authorization: `Bearer ${userInfo?.token}`,
