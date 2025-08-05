@@ -9,7 +9,7 @@ const ShippingPage = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const cartItems = useSelector((store) => store.cart.items);
+  const cartItems = useSelector((state) => state.cart.items);
 
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * (item.quantity || 1),
@@ -85,13 +85,12 @@ const ShippingPage = () => {
     },
       withCredentials: true,
     });
-
+      console.log("Order Save Response 👉", data);
     if (data.success) {
       dispatch(clearCart());
       setTimeout(() => {
         navigate("/payment-success");
       }, 100);
-      console.log("Order Save Response 👉", data);
     }
   } catch (error) {
     console.error("Order saving failed:", error);
