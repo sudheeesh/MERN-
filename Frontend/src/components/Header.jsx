@@ -1,24 +1,48 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { CDN_URL } from "../mocobot";
 import { Menu, ShoppingCart, User } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logout, loginSuccess } from "../utils/authSlice";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = !!user;
+  
+
+  const cartItems = useSelector((store) => store.cart.items);
+  const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const toggleMenu =()=> setIsMenuOpen(!isMenuOpen)
-  const isAuthenticated  = false
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const cartitems = useSelector((store) => store.cart.items)
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
 
-  const cartCount = cartitems.reduce((total,item) => total + (item.quantity || 1),0)
+  const handleLogout = () => {
+    dispatch(logout());
+    setShowDropdown(false);
+    navigate("/");
+  };
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (userInfo) {
+      dispatch(loginSuccess(JSON.parse(userInfo)));
+    }
+  }, [dispatch]);
 
   return (
-    <header className= "fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-1">
         {/* Logo */}
         <div className="flex items-center">
-          <img className="h-16 w-auto object-contain" src={CDN_URL} alt="logo" />
+          <Link to="/">
+            <img className="h-16 w-auto object-contain" src={CDN_URL} alt="logo" />
+          </Link>
         </div>
 
         {/* Search bar */}
@@ -55,16 +79,61 @@ const Header = () => {
           <Link className="hover:text-cyan-600" to="/">Home</Link>
           <Link className="hover:text-cyan-600" to="/categories">Categories</Link>
           <Link className="hover:text-cyan-600" to="/grocery">Grocery</Link>
+
           <Link className="hover:text-cyan-600 flex items-center gap-1 relative" to="/cart">
-            Cart  <ShoppingCart className="w-5 h-5" />
-           {cartCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-          {cartCount}
-        </span>)}
+            Cart <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
+            )}
           </Link>
-          {!isAuthenticated && <Link className="hover:text-cyan-600" to="/register">
-            <User className="w-5 h-5" />
-          </Link>}
+
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <button onClick={toggleDropdown} className="hover:text-cyan-600">
+              <User className="w-5 h-5" />
+            </button>
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 bg-white shadow-md rounded-md p-8  min-w-[160px] z-50 flex flex-col text-sm font-medium">
+                {!isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      navigate("/register");
+                      setShowDropdown(false);
+                    }}
+                    className="text-left hover:text-blue-500"
+                  >
+                    Login / Signup
+                  </button>
+                ) : (
+                  <>
+                    <span className="text-gray-800 mb-1">👋 {user?.name}</span>
+                    <Link
+                      to="/orders"
+                      onClick={() => setShowDropdown(false)}
+                      className="hover:text-blue-500 mt-1"
+                    >
+                      My Orders
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowDropdown(false)}
+                      className="hover:text-blue-500 mt-1"
+                    >
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="text-left text-red-500 mt-2 hover:underline"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Hamburger Icon (Mobile Only) */}
@@ -73,7 +142,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Nav Menu with Animation */}
+      {/* Mobile Nav */}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden md:hidden ${
           isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -81,10 +150,21 @@ const Header = () => {
       >
         <ul className="flex flex-col gap-4 px-6 pb-4 text-base font-medium">
           <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-          <li><Link to="/about" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
-          <li><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+          <li><Link to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link></li>
           <li><Link to="/grocery" onClick={() => setIsMenuOpen(false)}>Grocery</Link></li>
-          <li><Link to="/register" onClick={() => setIsMenuOpen(false)}>Profile</Link></li>
+          <li><Link to="/cart" onClick={() => setIsMenuOpen(false)}>Cart</Link></li>
+          <li>
+            {!isAuthenticated ? (
+              <Link to="/register" onClick={() => setIsMenuOpen(false)}>Login / Signup</Link>
+            ) : (
+              <>
+                <span className="text-gray-700">👋 {user.name}</span>
+                <Link to="/orders" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
+                <Link to="/profile" onClick={() => setIsMenuOpen(false)}>My Profile</Link>
+                <button onClick={handleLogout} className="text-red-500">Logout</button>
+              </>
+            )}
+          </li>
         </ul>
       </div>
     </header>
@@ -92,3 +172,4 @@ const Header = () => {
 };
 
 export default Header;
+

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import AddAddressForm from "./AddAddressForm";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
+import { clearCart } from "../utils/cartSlice";
 
 const ShippingPage = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const cartItems = useSelector((store) => store.cart.items);
 
   const subtotal = cartItems.reduce(
@@ -60,28 +62,61 @@ const ShippingPage = () => {
       description: "Order Payment",
       image: "/logo.png",
       order_id: orderData.order.id,
-      handler: function (response) {
-        alert("🎉 Payment Successful!");
-        // You can navigate or save order to DB here
+      handler: async function (response) {
+  try {
+   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+    const orderData = {
+      shippingInfo: selectedAddress,
+      orderItems: cartItems,
+      paymentInfo: {
+        id: response.razorpay_payment_id,
+        status: "succeeded",
       },
+      itemPrice: subtotal,
+      taxPrice: gst,
+      shippingPrice: deliveryCharge,
+      totalPrice: totalAmount,
+    };
+
+    const { data } = await axiosInstance.post("/new/order", orderData, {
+       headers: {
+    Authorization: `Bearer ${userInfo?.token}`,
+    },
+      withCredentials: true,
+    });
+
+    if (data.success) {
+      dispatch(clearCart());
+      setTimeout(() => {
+        navigate("/payment-success");
+      }, 100);
+      console.log("Order Save Response 👉", data);
+    }
+  } catch (error) {
+    console.error("Order saving failed:", error);
+    alert("Order completed but not saved.");
+  }
+},
+
       prefill: {
-        name: selectedAddress.name,
-        email: "customer@example.com",
-        contact: selectedAddress.phone,
+        name: "Sudheesh Ravichandran",
+        email: "sudheeshvilla5@gmail.com",
+        contact: "8778063386",
       },
       notes: {
-        address: `${selectedAddress.address}, ${selectedAddress.city.name}`,
+        app: "Store",
       },
       theme: {
-        color: "#000000",
+        color: "#0f172a",
       },
     };
 
     const razor = new window.Razorpay(options);
     razor.open();
   } catch (err) {
-    console.error("Payment failed", err);
-    alert("Something went wrong while initiating payment.");
+    console.error("Payment Error:", err);
+    alert("Something went wrong during payment.");
   }
 };
 

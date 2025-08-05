@@ -20,7 +20,7 @@ export const createNewOrder = handleAsyncError(async(req,res,next)=>{
         shippingPrice,
         totalPrice,
         paidAt:Date.now(),
-        user:req.user._id
+        user:req.user.id
     })
     res.status(200).json({
         success:true,
