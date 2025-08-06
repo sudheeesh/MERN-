@@ -54,14 +54,18 @@ userSchema.pre('save', async function(next){
 userSchema.methods.verifyPassword=async function(userEnteredPassword){
       return await bcrypt.compare(userEnteredPassword,this.password)
 }
+userSchema.methods.getJWTToken = function () {
+  const token = jwt.sign(
+    { id: this._id },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: process.env.JWT_EXPIRE }
+  );
 
-userSchema.methods.getJWTToken=function(){
-      console.log("Generated JWT Token:", token)
-    return jwt.sign({id:this._id},process.env.JWT_SECRET_KEY,{
-        expiresIn:process.env.JWT_EXPIRE
-        
-    })
-}
+  console.log("Generated JWT Token:", token); // ✅ Now token is defined
+
+  return token;
+};
+
 
 userSchema.methods.generatePasswordResetToken=function(){
   const resetToken = crypto.randomBytes(20).toString('hex')
