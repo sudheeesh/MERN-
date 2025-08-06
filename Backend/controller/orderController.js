@@ -22,7 +22,8 @@ export const createNewOrder = handleAsyncError(async(req,res,next)=>{
         paidAt:Date.now(),
         user:req.user._id
     })
-    console.log("req.user:", req.user)
+    console.log('Cookies:', req.cookies);
+console.log('User:', req.user); // if using auth middleware
     res.status(200).json({
         success:true,
         order
