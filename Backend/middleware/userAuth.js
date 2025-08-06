@@ -4,18 +4,32 @@ import jwt from "jsonwebtoken"
 import User from "../models/userModel.js"
 
 // middleware/auth.js
-export const verifyUserAuth = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
+export const verifyUserAuth =handleAsyncError(async (req, res, next) => {
+  let token;
+   console.log("Authorization Header:", req.headers.authorization);
+  // ✅ From Authorization Header
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+     console.log("✅ Extracted Token:", token);
+  }
+
+  if (!token) {
+    return next(new ErrorHandler("Please login to access this resource", 401));
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    console.log("JWT_SECRET:", process.env.JWT_SECRET_KEY);
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      console.log("✅ Decoded JWT:", decodedData);
+    req.user = await User.findById(decodedData.id);
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+  } catch (error) {
+    return next(new ErrorHandler("Invalid token", 401));
   }
-};
+});
 
 export const roleBasedAccess=(...roles) =>{
     return(req,res,next)=>{

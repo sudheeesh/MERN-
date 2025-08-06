@@ -19,6 +19,7 @@ const appstore = configureStore({
 appstore.subscribe(() => {
   const state = appstore.getState();
   saveState({
+    auth:state.auth,
     cart: state.cart,
     checkout: state.checkout,
   });

@@ -57,9 +57,10 @@ const Register = () => {
 
     // ✅ Save user to Redux and localStorage
     const { user, token } = res.data;
-    dispatch(loginSuccess(user));
-    localStorage.setItem('userInfo', JSON.stringify(user));
-    localStorage.setItem('authToken', token); // optional
+    const userWithToken = { ...user, token }
+    dispatch(loginSuccess(userWithToken));
+    console.log(userWithToken)
+    localStorage.setItem('userInfo', JSON.stringify(userWithToken));
 
     navigate('/');
   } catch (err) {

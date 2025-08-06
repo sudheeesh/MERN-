@@ -56,8 +56,10 @@ userSchema.methods.verifyPassword=async function(userEnteredPassword){
 }
 
 userSchema.methods.getJWTToken=function(){
+      console.log("Generated JWT Token:", token)
     return jwt.sign({id:this._id},process.env.JWT_SECRET_KEY,{
         expiresIn:process.env.JWT_EXPIRE
+        
     })
 }
 

@@ -10,6 +10,7 @@ const ShippingPage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const cartItems = useSelector((state) => state.cart.items);
+  const user = useSelector((state) => state.auth.user)
 
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * (item.quantity || 1),
@@ -37,7 +38,9 @@ const ShippingPage = () => {
   const handleSelectSaved = (address) => {
     setSelectedAddress(address);
   };
-
+console.log("✅ user from Redux:", user);
+console.log("✅ Token from user:", user?.token);
+console.log("✅ LocalStorage:", localStorage.getItem("userInfo"));
   const handleProceed = async () => {
   if (!selectedAddress) {
     alert("Please select or add an address.");
@@ -64,7 +67,6 @@ const ShippingPage = () => {
       order_id: orderData.order.id,
       handler: async function (response) {
   try {
-   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
     const orderData = {
       shippingInfo: selectedAddress,
@@ -79,10 +81,15 @@ const ShippingPage = () => {
       totalPrice: totalAmount,
     };
     console.log("Order Data:", orderData);
-    const { data } = await axiosInstance.post("/new/order", orderData, {
-       headers: {
-    Authorization: `Bearer ${userInfo?.token}`,
-    },
+    const localUserInfo = JSON.parse(localStorage.getItem("userInfo"));
+console.log("🔥 Token from localStorage:", localUserInfo?.token);
+console.log("🧪 Sending token:", localStorage.getItem('authToken'))
+   const token = localStorage.getItem('authToken')
+   console.log("Token sent to backend:", token);
+const { data } = await axiosInstance.post("/new/order", orderData, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
       withCredentials: true,
     });
     console.log(userInfo?.token)
