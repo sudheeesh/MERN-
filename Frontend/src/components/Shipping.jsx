@@ -122,7 +122,7 @@ const { data } = await axiosInstance.post("/new/order", orderData, {
       }, 100);
     }
   } catch (error) {
-    console.error("Order saving failed:",(error.response.data));
+    console.error("Order saving failed:",(error?.response?.data));
     alert("Order completed but not saved.");
   }
 },
