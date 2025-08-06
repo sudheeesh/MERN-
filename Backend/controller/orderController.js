@@ -10,8 +10,9 @@ export const createNewOrder = handleAsyncError(async(req,res,next)=>{
     const {shippingInfo,orderItems,
            paymentInfo,itemPrice,
            taxPrice,shippingPrice,totalPrice} = req.body
-
+    
     const order = await Order.create({
+        
         shippingInfo,
         orderItems,
         paymentInfo,
@@ -22,6 +23,7 @@ export const createNewOrder = handleAsyncError(async(req,res,next)=>{
         paidAt:Date.now(),
         user:req.user._id
     })
+    console.log('Order Created:', order);
     console.log('Cookies:', req.cookies);
 console.log('User:', req.user); // if using auth middleware
     res.status(200).json({
