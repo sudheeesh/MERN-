@@ -13,13 +13,11 @@ export const verifyUserAuth = handleAsyncError(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-    console.log("✅ Extracted Token from Header:", token);
   }
 
   // ✅ Else, try to get token from cookies
   if (!token && req.cookies.token) {
     token = req.cookies.token;
-    console.log("✅ Extracted Token from Cookie:", token);
   }
 
   if (!token) {
@@ -28,7 +26,6 @@ export const verifyUserAuth = handleAsyncError(async (req, res, next) => {
 
   try {
     const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("✅ Decoded JWT:", decodedData);
     req.user = await User.findById(decodedData.id);
     next();
   } catch (error) {

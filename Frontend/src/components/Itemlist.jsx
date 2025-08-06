@@ -46,7 +46,6 @@ const Itemlist = () => {
       try {
         const res = await axiosInstance.get(`/product/${id}`);
         setProduct(res.data.product);
-        console.log(res.data.product);
         
       } catch (error) {
         console.error('Failed to fetch product:', error);

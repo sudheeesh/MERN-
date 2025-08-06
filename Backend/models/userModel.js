@@ -61,7 +61,6 @@ userSchema.methods.getJWTToken = function () {
     { expiresIn: process.env.JWT_EXPIRE }
   );
 
-  console.log("Generated JWT Token:", token); // ✅ Now token is defined
 
   return token;
 };

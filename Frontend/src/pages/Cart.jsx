@@ -8,7 +8,6 @@ import ShippingAddress from '../components/Shipping'
   const Cart = () => {
     
       const cartItems = useSelector((state) => state.cart.items)
-      console.log(cartItems);
        const navigate = useNavigate()
       const dispatch = useDispatch()
 

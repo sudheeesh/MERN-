@@ -53,13 +53,11 @@ const Register = () => {
       res = await axiosInstance.post('/register', { name, email, password });
     }
 
-    console.log('Auth Success ✅', res.data);
 
     // ✅ Save user to Redux and localStorage
     const { user, token } = res.data;
     const userWithToken = { ...user, token }
     dispatch(loginSuccess(userWithToken));
-    console.log(userWithToken)
     localStorage.setItem('userInfo', JSON.stringify(userWithToken));
 
     navigate('/');

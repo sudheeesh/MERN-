@@ -11,8 +11,6 @@ export const getAllProducts = handleAsyncError(async(req,res,next) => {
 
    const apiFunctionality = new APIFunctionality(Product.find(),req.query).search().filter();
      const products = await apiFunctionality.query
-     console.log("Query:", apiFunctionality.query.getQuery());
-       console.log("Products fetched:", products)
      res.status(200).json({
         success:true,
         products

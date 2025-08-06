@@ -30,7 +30,7 @@ export const createNewOrder = handleAsyncError(async (req, res, next) => {
       user: req.user._id,
     });
 
-    console.log("✅ Order Created:", order);
+   
     res.status(200).json({
       success: true,
       order,
