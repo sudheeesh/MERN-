@@ -113,7 +113,6 @@ const { data } = await axiosInstance.post("/new/order", orderData, {
   },
       withCredentials: true,
     });
-    console.log(userInfo?.token)
       console.log("Order Save Response 👉", data);
     if (data.success) {
       dispatch(clearCart());
