@@ -62,7 +62,7 @@ const AddAddressForm = ({ onSave }) => {
 
     onSave({
       name,
-      phone,
+      phoneNo:phone,
       address,
       pincode,
       landmark,

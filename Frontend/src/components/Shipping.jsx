@@ -68,18 +68,39 @@ console.log("✅ LocalStorage:", localStorage.getItem("userInfo"));
       handler: async function (response) {
   try {
 
-    const orderData = {
-      shippingInfo: selectedAddress,
-      orderItems: cartItems,
-      paymentInfo: {
-        id: response.razorpay_payment_id,
-        status: "succeeded",
-      },
-      itemPrice: subtotal,
-      taxPrice: gst,
-      shippingPrice: deliveryCharge,
-      totalPrice: totalAmount,
-    };
+  const orderData = {
+  shippingInfo: {
+    address: selectedAddress.address,
+    city: selectedAddress.city.name,
+    state: selectedAddress.state.name,
+    country: selectedAddress.country.name,
+    phoneNo: selectedAddress.phone || '',
+    pincode: selectedAddress.pincode,
+    landmark: selectedAddress.landmark,
+  },
+  
+  orderItems: cartItems.map((item) => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    product: item._id || item.product,
+  })),
+  
+  paymentInfo: {
+    id: response.razorpay_payment_id,
+    status: "succeeded",
+  },
+  itemPrice: subtotal,
+  taxPrice: gst,
+  shippingPrice: deliveryCharge,
+  totalPrice: totalAmount,
+};
+    console.log("📦 Order Items:", cartItems.map((item) => ({
+  name: item.name,
+  price: item.price,
+  quantity: item.quantity,
+  product: item._id || item.product,
+})));
     console.log("Order Data:", orderData);
     const localUserInfo = JSON.parse(localStorage.getItem("userInfo"));
 console.log("🔥 Token from localStorage:", localUserInfo?.token);
@@ -101,7 +122,7 @@ const { data } = await axiosInstance.post("/new/order", orderData, {
       }, 100);
     }
   } catch (error) {
-    console.error("Order saving failed:", error);
+    console.error("Order saving failed:",(error.response.data));
     alert("Order completed but not saved.");
   }
 },
