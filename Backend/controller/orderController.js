@@ -6,31 +6,44 @@ import  handleAsyncError from "../middleware/handleAsyncError.js"
 
 
 // create order
-export const createNewOrder = handleAsyncError(async(req,res,next)=>{
-    const {shippingInfo,orderItems,
-           paymentInfo,itemPrice,
-           taxPrice,shippingPrice,totalPrice} = req.body
-    
+export const createNewOrder = handleAsyncError(async (req, res, next) => {
+  try {
+    const {
+      shippingInfo,
+      orderItems,
+      paymentInfo,
+      itemPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+    } = req.body;
+
     const order = await Order.create({
-        
-        shippingInfo,
-        orderItems,
-        paymentInfo,
-        itemPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        paidAt:Date.now(),
-        user:req.user._id
-    })
-    console.log('Order Created:', order);
-    console.log('Cookies:', req.cookies);
-console.log('User:', req.user); // if using auth middleware
+      shippingInfo,
+      orderItems,
+      paymentInfo,
+      itemPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+      paidAt: Date.now(),
+      user: req.user._id,
+    });
+
+    console.log("✅ Order Created:", order);
     res.status(200).json({
-        success:true,
-        order
-    })
-})
+      success: true,
+      order,
+    });
+  } catch (err) {
+    console.error("❌ Error creating order:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+});
 
 //single order
 export const getSingleOrder = handleAsyncError(async(req,res,next)=>{
