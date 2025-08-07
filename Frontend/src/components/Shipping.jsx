@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import { clearCart } from "../utils/cartSlice";
+import { setOrderDetail } from "../utils/orderSlice";
 
 const ShippingPage = () => {
 
@@ -101,11 +102,10 @@ const ShippingPage = () => {
   },
       withCredentials: true,
     });
-     if (data.success) {
-      dispatch(clearCart());
-      setTimeout(() => {
-        navigate("/payment-success");
-      }, 100);
+       if (data.success) {
+      dispatch(setOrderDetail(data.order)); // ✅ Save order in Redux
+      dispatch(clearCart()); // Optional: clear cart after order
+      navigate('/order-summary'); // ✅ Redirect to summary screen
     }
   } catch (error) {
   if (error.response) {

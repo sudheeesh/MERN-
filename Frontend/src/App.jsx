@@ -8,7 +8,9 @@ import Cart from './pages/Cart'
 import Footer from './components/Footer'
 import ShippingAddress from './components/Shipping'
 import Payment from './pages/Payment'
-import Register from './usersForm/Register'
+import Register from './userdetails/Register'
+import OrderSummary from './components/OrderSummary'
+import MyOrders from './userdetails/MyOrders'
 
 function App() {
 
@@ -23,6 +25,8 @@ function App() {
         <Route path='/shipping' element={<ShippingAddress/>}/>
         <Route path='/payment' element={<Payment/>}/>
         <Route path='/register' element={<Register/>}/>
+        <Route path='/order-summary' element={<OrderSummary/>}/>
+        <Route path='/my-orders' element={<MyOrders/>}/>
       </Routes>
       <Footer/>
     </Router>

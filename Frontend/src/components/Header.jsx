@@ -110,7 +110,7 @@ const Header = () => {
                   <>
                     <span className="text-gray-800 mb-1">👋 {user?.name}</span>
                     <Link
-                      to="/orders"
+                      to="/my-orders"
                       onClick={() => setShowDropdown(false)}
                       className="hover:text-blue-500 mt-1"
                     >

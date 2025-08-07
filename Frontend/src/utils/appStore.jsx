@@ -4,6 +4,7 @@ import cartReducer from "./cartSlice";
 import checkoutReducer from "./checkoutSlice";
 import { saveState, loadState } from "./localStorage";
 import authReducer from './authSlice'
+import orderReducer from './orderSlice'
 
 const preloadedState = loadState(); // 👈 Load from localStorage
 
@@ -11,7 +12,8 @@ const appstore = configureStore({
   reducer: {
     cart: cartReducer,
     checkout: checkoutReducer,
-    auth:authReducer
+    auth:authReducer,
+    order:orderReducer
   },
   preloadedState,
 });
