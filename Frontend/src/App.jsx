@@ -11,6 +11,7 @@ import Payment from './pages/Payment'
 import Register from './userdetails/Register'
 import OrderSummary from './components/OrderSummary'
 import MyOrders from './userdetails/MyOrders'
+import SearchResultsPage from './pages/SearchResultPage'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path='/register' element={<Register/>}/>
         <Route path='/order-summary' element={<OrderSummary/>}/>
         <Route path='/my-orders' element={<MyOrders/>}/>
+        <Route path='/search/:keyword' element={<SearchResultsPage/>}/>
       </Routes>
       <Footer/>
     </Router>

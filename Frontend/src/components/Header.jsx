@@ -4,10 +4,17 @@ import { CDN_URL } from "../mocobot";
 import { Menu, ShoppingCart, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, loginSuccess } from "../utils/authSlice";
+import axiosInstance from "../utils/axiosInstance";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [keyword,setKeyword] = useState("")
+  const [suggestions,setSuggestions] = useState([])
+  const [showSuggestions,setShowSuggestions] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+  const [hideTimer, setHideTimer] = useState(null);
+
 
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = !!user;
@@ -35,6 +42,47 @@ const Header = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+  if (!keyword.trim()) {
+    setSuggestions([]);
+    return;
+  }
+
+  const fetchSuggestions = async () => {
+    try {
+      const { data } = await axiosInstance.get(`/products?keyword=${keyword}`);
+      setSuggestions(data.products.slice(0, 5));
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error("Suggestion fetch failed", error);
+    }
+  };
+
+  const delay = setTimeout(fetchSuggestions, 300); // debounce
+     return () => clearTimeout(delay);
+       }, [keyword]);
+    useEffect(() => {
+       if (showSuggestions && !isHovered) {
+       const timer = setTimeout(() => {
+       setShowSuggestions(false);
+       }, 4000);
+
+       setHideTimer(timer);
+       return () => clearTimeout(timer);
+     }
+     }, [showSuggestions, isHovered]);
+
+
+ const HandleSubmit = (e) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      navigate(`/search/${keyword}`);
+      setShowSuggestions(false);
+    }
+  };
+  
+
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-1">
@@ -47,11 +95,13 @@ const Header = () => {
 
         {/* Search bar */}
         <div className="hidden md:flex flex-1 mx-6">
-          <form className="w-full">
+          <form className="w-full" onSubmit={HandleSubmit}>
             <div className="flex items-center bg-blue-100 rounded-md px-2 py-1">
               <input
                 type="text"
                 placeholder="Search for Products, brands and more"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
                 className="flex-1 bg-transparent text-sm px-2 py-1 outline-none placeholder:text-gray-500"
               />
               <button type="submit" className="text-blue-600">
@@ -73,6 +123,30 @@ const Header = () => {
             </div>
           </form>
         </div>
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="w-48 ml-9 absolute left-0 right-0 mt-48 bg-white border border-gray-300 rounded shadow z-50"
+                 onMouseEnter={() => {
+                 setIsHovered(true);
+                 if (hideTimer) clearTimeout(hideTimer);
+                 }}
+                 onMouseLeave={() => {
+                 setIsHovered(false);
+                 }}>
+           {suggestions.map((item) => (
+              <div
+                key={item._id}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  navigate(`/product/${item._id}`);
+                  setShowSuggestions(false);
+                  setKeyword('');
+                }}
+              >
+                {item.name}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-lg font-semibold font-sans pl-10">
