@@ -86,11 +86,11 @@ const Itemlist = () => {
   return (
     <div className="min-h-screen bg-[#fafafa] p-4 pt-24 pb-16 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10">
       {/* Product Image */}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center mt-20">
   <img
     src={product?.images?.[0]?.url}
     alt={product?.name}
-    className="rounded-xl w-72 h-96 object-cover hover"
+    className="w-full h-48 object-contain rounded "
   />
 
   {/* Move VariantSelector BELOW image */}

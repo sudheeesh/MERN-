@@ -3,7 +3,7 @@ import Product from "../models/productModels.js";
 import HandleError from "../utils/handleError.js";
 import APIFunctionality from "../utils/apiFunctionality.js"
 import User from "../models/userModel.js"
-import products from "razorpay/dist/types/products.js";
+
 
 
 //Get ALL Product
@@ -243,15 +243,6 @@ export const getProductReviews = handleAsyncError(async(req,res,next)=>{
             success:true,
             message :"Review deleted permanently",
        })
- })
-
- export const getAllCategories = handleAsyncError(async(req,res,next) => {
-   try {
-      const categories = await products.distinct("category")
-      res.status(200).json({ success: true, categories });
-   } catch (error) {
-         res.status(500).json({ success: false, message: "Server Error" });
-   }
  })
 
 
