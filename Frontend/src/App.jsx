@@ -12,6 +12,8 @@ import Register from './userdetails/Register'
 import OrderSummary from './components/OrderSummary'
 import MyOrders from './userdetails/MyOrders'
 import SearchResultsPage from './pages/SearchResultPage'
+import CategoryPage from './pages/Category'
+import Grocery from './pages/Grocery'
 
 function App() {
 
@@ -29,6 +31,8 @@ function App() {
         <Route path='/order-summary' element={<OrderSummary/>}/>
         <Route path='/my-orders' element={<MyOrders/>}/>
         <Route path='/search/:keyword' element={<SearchResultsPage/>}/>
+        <Route path='/grocery' element={<Grocery/>}/>
+         <Route path="/category/:slug" element={<CategoryPage />} />
       </Routes>
       <Footer/>
     </Router>

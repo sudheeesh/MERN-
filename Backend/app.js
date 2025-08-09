@@ -5,6 +5,7 @@ import user from './routes/userRoutes.js'
 import cookieParser from 'cookie-parser';
 import payment from './routes/paymentRoutes.js'
 import order from './routes/orderRoutes.js'
+import category from './routes/categoryRoutes.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
 const app = express()
@@ -27,6 +28,7 @@ app.use("/api/v1", product)
 app.use("/api/v1", user)
 app.use("/api/v1", order)
 app.use("/api/v1", payment)
+app.use("/api/v1", category)
 app.use(errorHandleMiddleware)
 dotenv.config({path:'Backend/config/config.env'})
 

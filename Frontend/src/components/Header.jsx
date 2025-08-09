@@ -14,6 +14,8 @@ const Header = () => {
   const [showSuggestions,setShowSuggestions] = useState(false)
   const [isHovered, setIsHovered] = useState(false);
   const [hideTimer, setHideTimer] = useState(null);
+  const [categories,setCategories] = useState([])
+  const [dropdown, setDropdown] = useState(false)
 
 
   const user = useSelector((state) => state.auth.user);
@@ -80,6 +82,18 @@ const Header = () => {
       setShowSuggestions(false);
     }
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const {data} = await axiosInstance.get("/categories")
+        setCategories(data.categories)
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories()
+  },[])
   
 
 
@@ -151,7 +165,36 @@ const Header = () => {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-lg font-semibold font-sans pl-10">
           <Link className="hover:text-cyan-600" to="/">Home</Link>
-          <Link className="hover:text-cyan-600" to="/categories">Categories</Link>
+          {/* Categories Dropdown */}
+<div
+  className="relative"
+  onMouseEnter={() => setDropdown(true)}
+  onMouseLeave={() => setDropdown(false)}
+>
+  <span className="hover:text-cyan-600 cursor-pointer">Categories</span>
+
+  {dropdown && (
+    console.log(categories),
+    
+    <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md z-50">
+      {categories.length > 0 ? (
+        categories.map((cat) => (
+          <Link
+            key={cat._id}
+            to={`/category/${cat.slug}`} // <-- use slug here
+            className="block px-4 py-2 hover:bg-gray-100"
+            onClick={() => setDropdown(false)}
+          >
+            {cat.name}
+          </Link>
+        ))
+      ) : (
+        <p className="px-4 py-2 text-gray-500">No categories</p>
+      )}
+    </div>
+  )}
+</div>
+
           <Link className="hover:text-cyan-600" to="/grocery">Grocery</Link>
 
           <Link className="hover:text-cyan-600 flex items-center gap-1 relative" to="/cart">
