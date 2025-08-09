@@ -3,7 +3,7 @@ import Product from "../models/productModels.js";
 import HandleError from "../utils/handleError.js";
 import APIFunctionality from "../utils/apiFunctionality.js"
 import User from "../models/userModel.js"
-
+import Category from "../models/categoryModel.js"
 
 
 //Get ALL Product
@@ -245,6 +245,26 @@ export const getProductReviews = handleAsyncError(async(req,res,next)=>{
        })
  })
 
+
+ export const getProductsByCategorySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Find category by slug
+    const category = await Category.findOne({ slug });
+    if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+
+    // Find products linked to this category's _id
+    const products = await Product.find({ category: category._id });
+
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 
 
