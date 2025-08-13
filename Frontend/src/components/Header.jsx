@@ -169,7 +169,7 @@ const Header = () => {
 <div
   className="relative"
   onMouseEnter={() => setDropdown(true)}
-  onMouseLeave={() => setDropdown(false)}
+  onMouseLeave={() => setDropdown(true)}
 >
   <span className="hover:text-cyan-600 cursor-pointer">Categories</span>
 
