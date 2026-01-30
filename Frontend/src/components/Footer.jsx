@@ -20,8 +20,8 @@ const Footer = () => {
       </div>
 
       {/* Main Footer Content */}
-      <div className="bg-[#232F3E] text-white pt-10 pb-10 px-6 border-b border-gray-600">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+      <div className="bg-[#232F3E] text-white pt-10 pb-10 px-4 md:px-8 border-b border-gray-600">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
 
           {/* Column 1 */}
           <div className="flex flex-col space-y-3">
