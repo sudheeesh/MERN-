@@ -21,7 +21,7 @@ const ImageSlider = () => {
 
   }, [])
   return (
-    <div className="relative w-full overflow-hidden mt-28 md:mt-24" style={{ height: '75vh', minHeight: '400px' }}>
+    <div className="relative w-full overflow-hidden mt-28 md:mt-24" style={{ height: '75vh', minHeight: '200px' }}>
       <div
         className="flex transition-transform duration-1000 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
