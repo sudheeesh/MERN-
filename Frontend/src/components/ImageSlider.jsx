@@ -12,6 +12,13 @@ const images = [
 const ImageSlider = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -21,7 +28,7 @@ const ImageSlider = () => {
 
   }, [])
   return (
-    <div className="relative w-full overflow-hidden mt-28 md:mt-24" style={{ height: '75vh', minHeight: '200px' }}>
+    <div className="relative w-full overflow-hidden mt-28 md:mt-24" style={{ height: isMobile ? "500px" : "75vh" }}>
       <div
         className="flex transition-transform duration-1000 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
