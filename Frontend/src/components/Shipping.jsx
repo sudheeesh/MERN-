@@ -40,104 +40,97 @@ const ShippingPage = () => {
     setSelectedAddress(address);
   };
   const handleProceed = async () => {
-  if (!selectedAddress) {
-    alert("Please select or add an address.");
-    return;
-  }
-
-  try {
-    // 1. Get Razorpay Key
-    const { data: keyData } = await axiosInstance.get("/getKey");
-
-    // 2. Create Order on backend
-    const { data: orderData } = await axiosInstance.post("/payment", {
-      amount: totalAmount,
-    });
-
-    // 3. Razorpay checkout options
-    const options = {
-      key: keyData.key,
-      amount: orderData.order.amount,
-      currency: "INR",
-      name: "SK Store",
-      description: "Order Payment",
-      image: "/logo.png",
-      order_id: orderData.order.id,
-      handler: async function (response) {
-  try {
-
-  const orderData = {
-  shippingInfo: {
-    address: selectedAddress.address,
-    city: selectedAddress.city.name,
-    state: selectedAddress.state.name,
-    country: selectedAddress.country.name,
-    phoneNo: selectedAddress.phone || '',
-    pincode: selectedAddress.pincode,
-    landmark: selectedAddress.landmark,
-  },
-  
-  orderItems: cartItems.map((item) => ({
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    product: item._id || item.product,
-  })),
-  
-  paymentInfo: {
-    id: response.razorpay_payment_id,
-    status: "succeeded",
-  },
-  itemPrice: subtotal,
-  taxPrice: gst,
-  shippingPrice: deliveryCharge,
-  totalPrice: totalAmount,
-};
- 
-   const localUserInfo = JSON.parse(localStorage.getItem("userInfo"));
-   const token = localStorage.getItem('authToken')
-   const { data } = await axiosInstance.post("/new/order", orderData, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-      withCredentials: true,
-    });
-       if (data.success) {
-      dispatch(setOrderDetail(data.order)); // ✅ Save order in Redux
-      dispatch(clearCart()); // Optional: clear cart after order
-      navigate('/order-summary'); // ✅ Redirect to summary screen
+    if (!selectedAddress) {
+      alert("Please select or add an address.");
+      return;
     }
-  } catch (error) {
-  if (error.response) {
-    console.error("Order saving failed:", error.response.data);
-  } else {
-    console.error("Order saving failed:", error.message);
-  }
-  alert("Order completed but not saved.");
-}
 
-},
+    try {
+      // 1. Get Razorpay Key (Auth handled by axiosInstance)
+      const { data: keyData } = await axiosInstance.get("/getKey");
 
-      prefill: {
-        name: "Sudheesh Ravichandran",
-        email: "sudheeshvilla5@gmail.com",
-        contact: "8778063386",
-      },
-      notes: {
-        app: "Store",
-      },
-      theme: {
-        color: "#0f172a",
-      },
-    };
+      // 2. Create Order on backend (Auth handled by axiosInstance)
+      const { data: orderData } = await axiosInstance.post("/payment", {
+        amount: totalAmount,
+      });
 
-    const razor = new window.Razorpay(options);
-    razor.open();
-  } catch (err) {
-    console.error("Payment Error:", err);
-    alert("Something went wrong during payment.");
-  }
-};
+      // 3. Razorpay checkout options
+      const options = {
+        key: keyData.key,
+        amount: orderData.order.amount,
+        currency: "INR",
+        name: "SK Store",
+        description: "Order Payment",
+        image: "/logo.png",
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          try {
+            const orderPayload = {
+              shippingInfo: {
+                address: selectedAddress.address,
+                city: selectedAddress.city.name,
+                state: selectedAddress.state.name,
+                country: selectedAddress.country.name,
+                phoneNo: selectedAddress.phoneNo || selectedAddress.phone, // Handle both existing and new formats
+                pincode: selectedAddress.pincode,
+                landmark: selectedAddress.landmark,
+              },
+
+              orderItems: cartItems.map((item) => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                product: item._id || item.product,
+              })),
+
+              paymentInfo: {
+                id: response.razorpay_payment_id,
+                status: "succeeded",
+              },
+              itemPrice: subtotal,
+              taxPrice: gst,
+              shippingPrice: deliveryCharge,
+              totalPrice: totalAmount,
+            };
+
+            const { data } = await axiosInstance.post("/new/order", orderPayload);
+
+            if (data.success) {
+              dispatch(setOrderDetail(data.order));
+              dispatch(clearCart());
+              navigate('/order-summary');
+            }
+          } catch (error) {
+            console.error("Order saving failed:", error);
+            alert("Order completed but not saved. Please contact support.");
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+          contact: selectedAddress.phoneNo || selectedAddress.phone,
+        },
+        notes: {
+          app: "SK Store",
+        },
+        theme: {
+          color: "#0f172a",
+        },
+      };
+
+      const razor = new window.Razorpay(options);
+      razor.open();
+    } catch (err) {
+      console.error("Payment Error:", err);
+      // Check for common auth error
+      if (err.response?.status === 401) {
+        alert("Session expired or unauthorized. Please login again.");
+        navigate("/login");
+      } else {
+        alert("Something went wrong during payment initialization.");
+      }
+    }
+  };
 
   return (
     <div className="mt-20 p-4 max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
@@ -150,12 +143,11 @@ const ShippingPage = () => {
             {savedAddresses.map((addr, i) => (
               <div
                 key={i}
-                className={`border p-3 rounded cursor-pointer ${
-                  selectedAddress === addr ? "border-blue-500" : ""
-                }`}
+                className={`border p-3 rounded cursor-pointer ${selectedAddress === addr ? "border-blue-500" : ""
+                  }`}
                 onClick={() => handleSelectSaved(addr)}
               >
-                <p className="font-medium">{addr.name}, {addr.phone}</p>
+                <p className="font-medium">{addr.name}, {addr.phoneNo}</p>
                 <p className="text-sm text-gray-600">
                   {addr.address}, {addr.city.name}, {addr.state.name},{" "}
                   {addr.country.name} - {addr.pincode}

@@ -7,7 +7,21 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    let token = localStorage.getItem('authToken');
+
+    // Fallback: try reading from userInfo
+    if (!token) {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        try {
+          const parsed = JSON.parse(userInfo);
+          token = parsed.token;
+        } catch (e) {
+          console.error("Error parsing userInfo", e);
+        }
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -16,6 +30,6 @@ axiosInstance.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-); 
+);
 
 export default axiosInstance;

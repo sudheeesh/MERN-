@@ -3,6 +3,7 @@ import Itemlist from '../components/Itemlist'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import CartItemCard from '../components/CartItemCard'
+import { clearCart } from '../utils/cartSlice'
 import ShippingAddress from '../components/Shipping'
 
 const Cart = () => {
@@ -25,7 +26,7 @@ const Cart = () => {
     const quantity = Number(item.quantity) || 1;
     return total + priceInRupees * quantity;
   }, 0);
-  const deliveryCharge = subtotal > 0 ? 50 : 0;
+  const deliveryCharge = subtotal > 500 ? 0 : 50;
   const tax = subtotal * 0.05;
   const totalAmount = subtotal + deliveryCharge + tax;
 
