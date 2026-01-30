@@ -47,31 +47,31 @@ const Register = () => {
       setLoading(true);
       let res;
 
-    if (isLogin) {
-      res = await axiosInstance.post('/login', { email, password });
-    } else {
-      res = await axiosInstance.post('/register', { name, email, password });
+      if (isLogin) {
+        res = await axiosInstance.post('/login', { email, password });
+      } else {
+        res = await axiosInstance.post('/register', { name, email, password });
+      }
+
+
+      // ✅ Save user to Redux and localStorage
+      const { user, token } = res.data;
+      const userWithToken = { ...user, token }
+      dispatch(loginSuccess(userWithToken));
+      localStorage.setItem('userInfo', JSON.stringify(userWithToken));
+
+      navigate('/');
+    } catch (err) {
+      console.error("Login/Register Error ❌", err); // log full error
+      const msg = err.response?.data?.message || err.message || 'Something went wrong';
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-
-
-    // ✅ Save user to Redux and localStorage
-    const { user, token } = res.data;
-    const userWithToken = { ...user, token }
-    dispatch(loginSuccess(userWithToken));
-    localStorage.setItem('userInfo', JSON.stringify(userWithToken));
-
-    navigate('/');
-  } catch (err) {
-  console.error("Login/Register Error ❌", err); // log full error
-  const msg = err.response?.data?.message || err.message || 'Something went wrong';
-  setError(msg);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-    <div className="mt-10 flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-black">
+    <div className="pt-28 pb-10 flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-black">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white bg-opacity-10 p-8 rounded-xl backdrop-blur-md text-white shadow-lg"

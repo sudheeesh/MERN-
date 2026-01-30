@@ -27,11 +27,9 @@ const SearchResultsPage = () => {
       {results.length === 0 ? (
         <p>No products found.</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {results.map((product) => (
-            <div key={product._id} className="border p-4 rounded">
-         <Link to={`/product/${product._id}`} >  <ProductCard  product={product}/> </Link>
-            </div>
+            <Link key={product._id} to={`/product/${product._id}`} >  <ProductCard product={product} /> </Link>
           ))}
         </div>
       )}

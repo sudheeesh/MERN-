@@ -4,6 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, removeItem } from '../utils/cartSlice';
 import VariantSelector from './VariantSelector.jsx';
+import ProductImageSlider from './ProductImageSlider.jsx';
 
 const Itemlist = () => {
   const { id } = useParams();
@@ -13,28 +14,28 @@ const Itemlist = () => {
   const [product, setProduct] = useState(null);
   const [selectedVariants, setSelectedVariants] = useState({});
 
-    const handleVariantChange = (variantName, option) => {
-  setSelectedVariants((prev) => {
-    const currentSelection = prev[variantName];
+  const handleVariantChange = (variantName, option) => {
+    setSelectedVariants((prev) => {
+      const currentSelection = prev[variantName];
 
-    // If clicking the same option again, remove it (deselect)
-    if (currentSelection === option) {
-      const updated = { ...prev };
-      delete updated[variantName];
-      return updated;
-    }
+      // If clicking the same option again, remove it (deselect)
+      if (currentSelection === option) {
+        const updated = { ...prev };
+        delete updated[variantName];
+        return updated;
+      }
 
-    // Otherwise, update with the new selection
-    return {
-      ...prev,
-      [variantName]: option,
-    };
-  });
-};
+      // Otherwise, update with the new selection
+      return {
+        ...prev,
+        [variantName]: option,
+      };
+    });
+  };
 
 
 
- 
+
   const cartItems = useSelector((state) => state.cart.items);
   const cartItem = cartItems.find((item) => item._id === product?._id);
   const quantity = cartItem ? cartItem.quantity : 0;
@@ -46,7 +47,7 @@ const Itemlist = () => {
       try {
         const res = await axiosInstance.get(`/product/${id}`);
         setProduct(res.data.product);
-        
+
       } catch (error) {
         console.error('Failed to fetch product:', error);
       }
@@ -74,7 +75,7 @@ const Itemlist = () => {
   };
 
   const handleProceedPayment = () => {
-    dispatch(addItem({...product, quantity:1}))
+    dispatch(addItem({ ...product, quantity: 1 }))
     navigate('/shipping');
   };
 
@@ -86,22 +87,27 @@ const Itemlist = () => {
   return (
     <div className="min-h-screen bg-[#fafafa] p-4 pt-24 pb-16 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10">
       {/* Product Image */}
-      <div className="flex flex-col items-center mt-20">
-  <img
-    src={product?.images?.[0]?.url}
-    alt={product?.name}
-    className="w-full h-48 object-contain rounded "
-  />
+      {/* Product Image */}
+      <div className="flex flex-col items-center">
+        {product.images && product.images.length > 0 ? (
+          <ProductImageSlider images={product.images.map(img => img.url)} />
+        ) : (
+          <img
+            src={product?.images?.[0]?.url}
+            alt={product?.name}
+            className="w-full h-64 md:h-96 object-contain rounded bg-white"
+          />
+        )}
 
-  {/* Move VariantSelector BELOW image */}
-  <div className="mt-4  max-w-md">
-    <VariantSelector
-      variants={product.variants}
-      selectedVariants={selectedVariants}
-      handleVariantChange={handleVariantChange}
-    />
-  </div>
-</div>
+        {/* Move VariantSelector BELOW image */}
+        <div className="mt-4 w-full">
+          <VariantSelector
+            variants={product.variants}
+            selectedVariants={selectedVariants}
+            handleVariantChange={handleVariantChange}
+          />
+        </div>
+      </div>
 
       {/* Product Info */}
       <div className="flex flex-col gap-4 w-full p-2">
